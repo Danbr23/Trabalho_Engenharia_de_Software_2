@@ -1,28 +1,33 @@
 package application;
 
+import org.fxmisc.richtext.CodeArea;
+
 import javafx.scene.control.TextArea;
 
 // Comando Colar
 class PasteCommand implements Command {
-    private TextArea textArea;
-    private CopyCommand copyCommand;
+    private CodeArea codeArea;
     private String previousText;
+    private int caretPosition;
 
-    public PasteCommand(TextArea textArea, CopyCommand copyCommand) {
-        this.textArea = textArea;
-        this.copyCommand = copyCommand;
+    public PasteCommand(CodeArea codeArea) {
+        this.codeArea = codeArea;
     }
 
     @Override
     public void execute() {
-        previousText = textArea.getText();
-        if (copyCommand.getClipboard() != null) {
-            textArea.insertText(textArea.getCaretPosition(), copyCommand.getClipboard());
+        if(codeArea != null) {
+        	previousText = codeArea.getText();
+        	caretPosition = codeArea.getCaretPosition();
+        	codeArea.paste();
         }
     }
 
     @Override
     public void undo() {
-        textArea.setText(previousText);
+        if(codeArea != null) {
+        	codeArea.replaceText(previousText);
+        	codeArea.moveTo(caretPosition);
+        }
     }
 }

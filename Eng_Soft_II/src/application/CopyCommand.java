@@ -1,28 +1,28 @@
 package application;
 
+import org.fxmisc.richtext.CodeArea;
+
 import javafx.scene.control.TextArea;
 
 // Comando Copiar
 class CopyCommand implements Command {
-    private TextArea textArea;
-    private String clipboard;
+    private CodeArea codeArea;
+    private String copiedText;
 
-    public CopyCommand(TextArea textArea) {
-        this.textArea = textArea;
+    public CopyCommand(CodeArea codeArea) {
+        this.codeArea = codeArea;
     }
 
     @Override
     public void execute() {
-        clipboard = textArea.getSelectedText();
-        System.out.println("Copiado: " + clipboard);
+        if(codeArea != null) {
+        	copiedText = codeArea.getSelectedText();
+        	codeArea.copy();
+        }
     }
 
     @Override
     public void undo() {
-        System.out.println("Undo de Copiar não faz nada.");
-    }
-
-    public String getClipboard() {
-        return clipboard;
+        // Não há como desfazer uma cópia
     }
 }
