@@ -6,9 +6,17 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import tabFactory.CodeEditorTabFactory;
+import tabFactory.EditorTabFactory;
+
 import java.util.Stack;
 
 import org.fxmisc.richtext.CodeArea;
+
+import command.Command;
+import command.CommandManager;
+import command.CopyCommand;
+import command.PasteCommand;
 
 // Aplicação JavaFX
 public class CodeEditor extends Application {
@@ -19,6 +27,7 @@ public class CodeEditor extends Application {
     //private Button undoButton = new Button("Desfazer");
     private TabPane tabPane = new TabPane();
     private CommandManager commandManager = new CommandManager();
+    private EditorTabFactory tabFactory = new CodeEditorTabFactory();
 
     @Override
     public void start(Stage primaryStage) {
@@ -94,13 +103,9 @@ public class CodeEditor extends Application {
     }
     
     private void addNewTab() {
-    	Tab tab = new Tab("Novo Arquivo");
-    	CodeArea codeArea = new CodeArea();
-    	codeArea.setWrapText(true);
-    	
-    	tab.setContent(new ScrollPane(codeArea));
-    	tabPane.getTabs().add(tab);
-    	tabPane.getSelectionModel().select(tab);
+    	Tab newTab = tabFactory.createTab();
+    	tabPane.getTabs().add(newTab);
+    	tabPane.getSelectionModel().select(newTab);
     }
     
     private CodeArea getCurrentCodeArea() {

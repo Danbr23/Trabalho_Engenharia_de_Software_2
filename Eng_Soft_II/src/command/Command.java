@@ -1,4 +1,4 @@
-package application;
+package command;
 
 public interface Command {
 	void execute();

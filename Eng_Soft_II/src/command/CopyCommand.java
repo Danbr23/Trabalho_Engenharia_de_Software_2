@@ -1,11 +1,11 @@
-package application;
+package command;
 
 import org.fxmisc.richtext.CodeArea;
 
 import javafx.scene.control.TextArea;
 
 // Comando Copiar
-class CopyCommand implements Command {
+public class CopyCommand implements Command {
     private CodeArea codeArea;
     private String copiedText;
 

@@ -1,11 +1,11 @@
-package application;
+package command;
 
 import org.fxmisc.richtext.CodeArea;
 
 import javafx.scene.control.TextArea;
 
 // Comando Colar
-class PasteCommand implements Command {
+public class PasteCommand implements Command {
     private CodeArea codeArea;
     private String previousText;
     private int caretPosition;

@@ -1,9 +1,9 @@
-package application;
+package command;
 
 import java.util.Stack;
 
 // Gerenciador de Comandos
-class CommandManager {
+public class CommandManager {
     private Stack<Command> commandStack = new Stack<>();
     private Stack<Command> redoStack = new Stack<>(); 
 
