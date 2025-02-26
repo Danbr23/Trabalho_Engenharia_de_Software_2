@@ -13,32 +13,33 @@ import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
+//Classse responsável por criar uma nova aba do editor de código com superte a numeração de linhas, realce de sintaxe e pesquisa de palavras dentro do código
 public class CodeEditorTabFactory implements EditorTabFactory, SearchObserver {
 	
-	private SearchBar searchBar;
-	private CodeArea codeArea;
+	private SearchBar searchBar; //referência para a barra de pesquisa, permitindo que editor reaja às buscas
+	private CodeArea codeArea; //área do texto
 	
-	public CodeEditorTabFactory(SearchBar searchBar) {
+	public CodeEditorTabFactory(SearchBar searchBar) {//Construtor
 		this.searchBar = searchBar;
 		searchBar.addObserver(this);
 	}
-	
+		
 	@Override
-	public Tab createTab() {
+	public Tab createTab() {// método para criar uma nova aba de forma dinâmcica
 		
-		Tab tab = new Tab("Novo Arquivo");
-		codeArea = new CodeArea();
-		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-		SyntaxHighlighter syntaxHighlighter = new CSyntaxHighlighter(new PlainSyntaxHighlighter());
+		Tab tab = new Tab("Novo Arquivo"); //toda tab tem o novo de "Novo Arquivo"
+		codeArea = new CodeArea(); //cria o espaço onde o usuário irá digitar e o texto será analisado pelo decorator e pelo observer
+		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea)); //comando simples pra ativar a numeração de linhas
+		SyntaxHighlighter syntaxHighlighter = new CSyntaxHighlighter(new PlainSyntaxHighlighter()); //cria o decorator que vai realssar as palavras
 		
-		codeArea.textProperty().addListener((obs, oldText, newText) -> {
+		codeArea.textProperty().addListener((obs, oldText, newText) -> { //sempre que o texto for alterado, o realce de sintaxe será reaplicado
 		    syntaxHighlighter.applyHighlighting(codeArea);
 		});
 		
 		
 		
-		codeArea.setWrapText(true);
-		ScrollPane scrollPane = new ScrollPane(codeArea);
+		codeArea.setWrapText(true); //habilita quebra de linha automática
+		ScrollPane scrollPane = new ScrollPane(codeArea); //container principal com rolagem
 		scrollPane.setFitToWidth(true);
 		scrollPane.setFitToHeight(true);
 		
@@ -49,12 +50,14 @@ public class CodeEditorTabFactory implements EditorTabFactory, SearchObserver {
 	
 	
 	@Override
-	public void onSearch(String query) {
+	public void onSearch(String query) { //método sempre chamado quando uma nova pesquisa é feita na Search Bar.
+		//se a pesquisa estiver vazia, remove todos os estilos
 		if(query.isEmpty()) {
 			codeArea.clearStyle(0,codeArea.getLength());
 			return;
 		}
 		
+		//Caso contrário, ele percorre o texto, encontra as ocorrências da palavra e aplica o estilo de destaque
 		String text = codeArea.getText();
 		int index = 0;
 		

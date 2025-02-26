@@ -3,10 +3,10 @@ package observer;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
-public class SearchBarUI {
+public class SearchBarUI { //Componente gráfico da barra de pesquisa
 	private SearchBar searchBar;
 	
-	public SearchBarUI(SearchBar searchBar) {
+	public SearchBarUI(SearchBar searchBar) { //adiciona um objeto da classe searchBar a componente gráfica
 		this.searchBar = searchBar;
 	}
 	

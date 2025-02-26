@@ -9,8 +9,11 @@ import org.fxmisc.richtext.CodeArea;
 
 import java.util.Collections;
 
-public class CSyntaxHighlighter extends SyntaxHighlighterDecorator {
+//classe específica para destacar as palavras reservadas da linguagem C
+public class CSyntaxHighlighter extends SyntaxHighlighterDecorator { //extende do Highlighter padrão
 	
+	
+	//Listas com as palavras reservadas em C, divididas em grupos, cada uma com uma cor diferente.
 	private static final List<String> DATA_TYPES = Arrays.asList("char","double","enum","float","int","long","short",
 			"signed","struct","union","unsigned","void");
 	
@@ -27,14 +30,15 @@ public class CSyntaxHighlighter extends SyntaxHighlighterDecorator {
 		super(decoratedHighlighter);
 	}
 	
-	@Override
+	@Override //método para aplicar o highlight
 	public void applyHighlighting(CodeArea codeArea) {
 		super.applyHighlighting(codeArea);
 		
-		String text = codeArea.getText();
+		String text = codeArea.getText();//pega o texto do área de texto
 		
-		codeArea.clearStyle(0,text.length());
+		codeArea.clearStyle(0,text.length()); //tira qualquer estilização
 		
+		//vai verificar a sentença e e comparar com os agrupamentos de palavras para saber com que cor destacar
 		highlightWords(codeArea, CONTROL_FLOW, "control-flow");
 		highlightWords(codeArea, DATA_TYPES,"data-type");
 		highlightWords(codeArea, MODIFIERS, "modifier");
@@ -42,6 +46,7 @@ public class CSyntaxHighlighter extends SyntaxHighlighterDecorator {
 		
 	}
 	
+	//verifica palavra por palavra da área de texto para adicionar a cor a palavra se ela estiver em algum grupo das palavras reservadas
 	private void highlightWords(CodeArea codeArea, List<String> words, String styleClass) {
 		for(String word : words) {
 			Pattern pattern = Pattern.compile("\\b" + word + "\\b");
