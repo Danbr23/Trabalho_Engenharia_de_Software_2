@@ -5,66 +5,48 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import tabFactory.CodeEditorTabFactory;
-import tabFactory.EditorTabFactory;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Stack;
 
 import org.fxmisc.richtext.CodeArea;
 
-import command.Command;
-import command.CommandManager;
-import command.CopyCommand;
-import command.PasteCommand;
+import command.*;
+import tabFactory.*;
+import observer.*;
 
 // Aplicação JavaFX
 public class CodeEditor extends Application {
 	
-    //private TextArea textArea = new TextArea();
-    //private Button copyButton = new Button("Copr");
-    //private Button pasteButton = new Button("Colar");
-    //private Button undoButton = new Button("Desfazer");
+
     private TabPane tabPane = new TabPane();
     private CommandManager commandManager = new CommandManager();
-    private EditorTabFactory tabFactory = new CodeEditorTabFactory();
+    private EditorTabFactory tabFactory;
 
     @Override
     public void start(Stage primaryStage) {
     	
-    	/*
-        copyCommand = new CopyCommand(textArea);
-
-        copyButton.setOnAction(e -> copyCommand.execute());
-        pasteButton.setOnAction(e -> {
-            PasteCommand pasteCommand = new PasteCommand(textArea, copyCommand);
-            commandManager.executeCommand(pasteCommand);
-            undoButton.setDisable(!commandManager.hasHistory());
-        });
-        undoButton.setOnAction(e -> {
-            commandManager.undoLastCommand();
-            undoButton.setDisable(!commandManager.hasHistory());
-        });
-
-        undoButton.setDisable(true);
-
-        VBox root = new VBox(10, textArea, copyButton, pasteButton, undoButton);
-        Scene scene = new Scene(root, 400, 300);
-
-        primaryStage.setTitle("Editor de Texto - JavaFX");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        */
     	
     	BorderPane root = new BorderPane();
-    	root.setCenter(tabPane);
+    	
+    	SearchBar searchBar = new SearchBar();
+    	SearchBarUI searchBarUI = new SearchBarUI(searchBar);
+    	tabFactory = new CodeEditorTabFactory(searchBar);
     	
     	MenuBar menuBar = createMenuBar();
     	root.setTop(menuBar);
-    	
+    	root.setCenter(tabPane);
+    	root.setBottom(searchBarUI.createSearchBar());
+    		
     	addNewTab();
     	
     	Scene scene = new Scene(root, 800, 600);
+    	scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
     	primaryStage.setTitle("Editor de código C");
     	primaryStage.setScene(scene);
     	primaryStage.show();
@@ -94,7 +76,10 @@ public class CodeEditor extends Application {
     	MenuItem redoItem = new MenuItem("Refazer");
     	redoItem.setOnAction(e -> commandManager.redo());
     	
-    	fileMenu.getItems().add(newTabItem);
+    	MenuItem saveItem = new MenuItem("Salvar");
+    	saveItem.setOnAction(e -> saveFile());
+    	
+    	fileMenu.getItems().addAll(newTabItem,saveItem);
     	editMenu.getItems().addAll(copyItem,pasteItem,undoItem,redoItem);
     	
     	menuBar.getMenus().addAll(fileMenu,editMenu);
@@ -102,7 +87,28 @@ public class CodeEditor extends Application {
     	
     }
     
+    private void saveFile() {
+    	Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+    	if(selectedTab == null) return;
+    	
+    	ScrollPane scrollPane = (ScrollPane) selectedTab.getContent();
+    	CodeArea codeArea = (CodeArea) scrollPane.getContent();
+    	
+    	FileChooser fileChooser = new FileChooser();
+    	fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Arquivos C (*.c)","*.c")); 
+    	File file = fileChooser.showSaveDialog(null);
+    	
+    	if(file != null) {
+    		try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
+    			writer.write(codeArea.getText());
+    		}catch(IOException e) {
+    			e.printStackTrace();
+    		}
+    	}
+    }
+    
     private void addNewTab() {
+    	
     	Tab newTab = tabFactory.createTab();
     	tabPane.getTabs().add(newTab);
     	tabPane.getSelectionModel().select(newTab);
